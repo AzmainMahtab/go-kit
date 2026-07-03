@@ -1,18 +1,16 @@
 // Package main is the application entrypoint.
 //
-// Think of main.go as the composition root: it builds every concrete adapter
-// and injects them into modules. No business logic lives here.
+// It is intentionally thin: it loads configuration, builds the concrete
+// adapters, wires the modules, and hands control to the platform HTTP server.
+// All route mounting, middleware, and lifecycle logic lives in
+// internal/platform/http/server.go.
 package main
 
 import (
 	"context"
 	"log"
 	"log/slog"
-	"net/http"
 	"os"
-	"os/signal"
-	"syscall"
-	"time"
 
 	_ "github.com/elite4print/elite4print-go/docs" // swagger docs
 	"github.com/elite4print/elite4print-go/internal/modules/auth"
@@ -25,7 +23,6 @@ import (
 	"github.com/elite4print/elite4print-go/internal/platform/health"
 	platformhttp "github.com/elite4print/elite4print-go/internal/platform/http"
 	"github.com/elite4print/elite4print-go/internal/platform/http/middleware"
-	"github.com/elite4print/elite4print-go/internal/platform/http/responses"
 	"github.com/elite4print/elite4print-go/internal/shared/eventbus"
 	"github.com/elite4print/elite4print-go/internal/shared/logger"
 	"github.com/elite4print/elite4print-go/internal/shared/password"
@@ -75,9 +72,6 @@ func main() {
 	hasher := password.NewArgon2id()
 	tokenizer := token.NewJWT(cfg.JWTSecretKey)
 
-	rateLimiter := middleware.NewRateLimiter(redisCache, cfg.RateLimitRPS, cfg.RateLimitBurst)
-	server := platformhttp.NewServer(cfg, log, rateLimiter)
-
 	// Shared auth middleware is built before modules so it can protect identity
 	// routes as well as auth routes.
 	tokenBlacklist := authcache.NewRedisTokenBlacklist(redisCache)
@@ -92,7 +86,6 @@ func main() {
 		V:      v,
 		AuthMW: authMW.Authenticate,
 	})
-	userRepo := identityModule.UserRepository(db, txManager)
 
 	// Auth module.
 	authModule := auth.NewModule(auth.Deps{
@@ -105,38 +98,24 @@ func main() {
 		V:              v,
 		Cfg:            cfg,
 		TokenBlacklist: tokenBlacklist,
-	}, userRepo)
+	}, identityModule.UserRepository(db, txManager))
 
-	server.Router().Mount("/api/v1/users", identityModule.UserRouter())
-	server.Router().Mount("/api/v1/auth", authModule.AuthRouter())
-
-	// Health check.
-	server.Router().Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		result := healthChecker.Check(r.Context())
-		if result.Status == health.StatusDown {
-			responses.JSON(w, http.StatusServiceUnavailable, responses.Error(http.StatusServiceUnavailable, "HEALTH_CHECK_FAILED", "one or more dependencies are unavailable"))
-			return
-		}
-		responses.OK(w, result)
+	server := platformhttp.NewServer(platformhttp.ServerDeps{
+		Config:         cfg,
+		Log:            log,
+		RateLimiter:    middleware.NewRateLimiter(redisCache, cfg.RateLimitRPS, cfg.RateLimitBurst),
+		AuthRouter:     authModule.AuthRouter(),
+		IdentityRouter: identityModule.UserRouter(),
+		HealthChecker:  healthChecker,
+		SwaggerHandler: httpSwagger.WrapHandler,
 	})
 
-	// Swagger UI.
-	server.Router().Get("/swagger/*", httpSwagger.WrapHandler)
-
-	if err := server.ListenAndServe(); err != nil {
-		log.Error("failed to start server", slog.Any("error", err))
-		os.Exit(1)
-	}
-
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-
-	log.Info("shutting down server")
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancel()
-	if err := server.Shutdown(shutdownCtx); err != nil {
-		log.Error("server forced to shutdown", slog.Any("error", err))
+	if err := server.Run(); err != nil {
+		log.Error("server exited with error", slog.Any("error", err))
+		// Run() returning an error calls os.Exit below, which skips deferred
+		// cleanup. Close dependencies explicitly so connections are released.
+		_ = db.Close()
+		_ = redisCache.Close()
 		os.Exit(1)
 	}
 }
