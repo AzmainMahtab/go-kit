@@ -1,0 +1,17 @@
+# Development overrides. Docker Compose merges this file automatically.
+# It enables hot reload by mounting the local source into the container.
+name: elite4print-go
+
+services:
+  api:
+    build:
+      target: development
+    environment:
+      ENVIRONMENT: development
+    volumes:
+      - .:/app
+      - go_mod_cache:/go/pkg/mod
+    command: ["air", "-c", ".air.toml"]
+
+volumes:
+  go_mod_cache:
