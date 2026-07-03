@@ -26,6 +26,7 @@ import (
 	"github.com/elite4print/elite4print-go/internal/platform/database"
 	platformhttp "github.com/elite4print/elite4print-go/internal/platform/http"
 	"github.com/elite4print/elite4print-go/internal/platform/http/middleware"
+	"github.com/elite4print/elite4print-go/internal/platform/health"
 	"github.com/elite4print/elite4print-go/internal/shared/eventbus"
 	"github.com/elite4print/elite4print-go/internal/shared/logger"
 	"github.com/elite4print/elite4print-go/internal/shared/password"
@@ -63,6 +64,8 @@ func main() {
 		log.Warn("redis unreachable", slog.Any("error", err))
 	}
 	defer redisCache.Close()
+
+	healthChecker := health.NewChecker(db, redisCache.Client())
 
 	// Use in-memory event bus for the starter set. Swap for NATS JetStream when
 	// you are ready to run background workers across instances.
@@ -109,7 +112,12 @@ func main() {
 
 	// Health check.
 	server.Router().Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		responses.OK(w, map[string]string{"status": "ok"})
+		result := healthChecker.Check(r.Context())
+		if result.Status == health.StatusDown {
+			responses.JSON(w, http.StatusServiceUnavailable, responses.Error(http.StatusServiceUnavailable, "HEALTH_CHECK_FAILED", "one or more dependencies are unavailable"))
+			return
+		}
+		responses.OK(w, result)
 	})
 
 	// Swagger UI.
