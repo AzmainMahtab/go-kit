@@ -88,7 +88,13 @@ func (uc *Refresh) Handle(ctx context.Context, cmd application.RefreshCommand) (
 		return application.TokenPairResult{}, err
 	}
 
+	newRefreshToken, newRefreshJTI, err := uc.tokenizer.GenerateRefreshToken(session.ID, uc.cfg.RefreshTTL)
+	if err != nil {
+		return application.TokenPairResult{}, fmt.Errorf("refresh: %w", err)
+	}
+
 	session.Touch(now)
+	session.RefreshJTI = newRefreshJTI
 	if err := uc.sessionRepo.Update(ctx, session); err != nil {
 		return application.TokenPairResult{}, fmt.Errorf("refresh: %w", err)
 	}
@@ -102,7 +108,7 @@ func (uc *Refresh) Handle(ctx context.Context, cmd application.RefreshCommand) (
 
 	return application.TokenPairResult{
 		AccessToken:  accessToken,
-		RefreshToken: cmd.RefreshToken,
+		RefreshToken: newRefreshToken,
 		ExpiresAt:    now.Add(uc.cfg.AccessTTL),
 		SessionID:    session.ID,
 	}, nil
