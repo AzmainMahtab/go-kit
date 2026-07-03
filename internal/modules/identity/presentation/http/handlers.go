@@ -197,7 +197,7 @@ func (h *UserHandler) mapError(w http.ResponseWriter, err error) {
 		responses.Conflict(w, err.Error())
 	case errors.Is(err, domain.ErrInvalidEmail) || errors.Is(err, domain.ErrEmailRequired):
 		responses.BadRequest(w, err)
-	case errors.Is(err, domain.ErrWeakPassword), errors.Is(err, domain.ErrPasswordMismatch):
+	case errors.Is(err, domain.ErrWeakPassword), errors.Is(err, domain.ErrPasswordMismatch), errors.Is(err, domain.ErrInvalidStatusTransition):
 		responses.BadRequest(w, err)
 	case errors.As(err, &valErr):
 		responses.BadRequest(w, err)

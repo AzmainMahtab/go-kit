@@ -81,6 +81,27 @@ func (u *User) CanLogin() error {
 	}
 }
 
+// TransitionStatus moves the user to a new lifecycle state.
+// It encodes the allowed transitions in the domain so handlers cannot set
+// arbitrary statuses.
+func (u *User) TransitionStatus(to UserStatus) error {
+	allowed := map[UserStatus][]UserStatus{
+		UserStatusPendingVerification: {UserStatusActive, UserStatusInactive, UserStatusSuspended},
+		UserStatusActive:              {UserStatusInactive, UserStatusSuspended},
+		UserStatusInactive:            {UserStatusActive},
+		UserStatusSuspended:           {UserStatusActive},
+	}
+
+	for _, candidate := range allowed[u.Status] {
+		if candidate == to {
+			u.Status = to
+			return nil
+		}
+	}
+
+	return ErrInvalidStatusTransition
+}
+
 // Email is a value object.
 type Email struct{ value string }
 
@@ -107,6 +128,7 @@ var (
 	ErrUserInactive      = errors.New("user account is inactive")
 	ErrUserSuspended     = errors.New("user account is suspended")
 	ErrUserDeleted       = errors.New("user account is deleted")
-	ErrWeakPassword      = errors.New("password does not meet strength requirements")
-	ErrPasswordMismatch  = errors.New("passwords do not match")
+	ErrWeakPassword           = errors.New("password does not meet strength requirements")
+	ErrPasswordMismatch       = errors.New("passwords do not match")
+	ErrInvalidStatusTransition = errors.New("invalid status transition")
 )
