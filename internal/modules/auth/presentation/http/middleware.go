@@ -66,11 +66,11 @@ func (m *AuthMiddleware) Authenticate(next http.Handler) http.Handler {
 }
 
 // CurrentUserFromContext extracts the current user from context.
-func CurrentUserFromContext(ctx context.Context) CurrentUser {
+func CurrentUserFromContext(ctx context.Context) (CurrentUser, bool) {
 	if user, ok := ctx.Value(currentUserKey{}).(CurrentUser); ok {
-		return user
+		return user, true
 	}
-	return CurrentUser{UserID: uuid.Nil, SessionID: uuid.Nil}
+	return CurrentUser{UserID: uuid.Nil, SessionID: uuid.Nil}, false
 }
 
 func extractBearerToken(r *http.Request) (string, bool) {

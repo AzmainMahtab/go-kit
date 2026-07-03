@@ -12,9 +12,11 @@ import (
 
 	_ "github.com/elite4print/elite4print-go/docs" // swagger docs
 	"github.com/elite4print/elite4print-go/internal/modules/auth"
+	authcache "github.com/elite4print/elite4print-go/internal/modules/auth/infrastructure/cache"
+	authHTTP "github.com/elite4print/elite4print-go/internal/modules/auth/presentation/http"
+	"github.com/elite4print/elite4print-go/internal/modules/identity"
 	"github.com/elite4print/elite4print-go/internal/platform/http/responses"
 	httpSwagger "github.com/swaggo/http-swagger"
-	"github.com/elite4print/elite4print-go/internal/modules/identity"
 	"github.com/elite4print/elite4print-go/internal/platform/cache"
 	"github.com/elite4print/elite4print-go/internal/platform/config"
 	"github.com/elite4print/elite4print-go/internal/platform/database"
@@ -69,6 +71,11 @@ func main() {
 	rateLimiter := middleware.NewRateLimiter(redisCache, cfg.RateLimitRPS, cfg.RateLimitBurst)
 	server := platformhttp.NewServer(cfg, log, rateLimiter)
 
+	// Shared auth middleware is built before modules so it can protect identity
+	// routes as well as auth routes.
+	tokenBlacklist := authcache.NewRedisTokenBlacklist(redisCache)
+	authMW := authHTTP.NewAuthMiddleware(tokenizer, tokenBlacklist)
+
 	// Identity module.
 	identityModule := identity.NewModule(identity.Deps{
 		DB:     db,
@@ -76,19 +83,21 @@ func main() {
 		Bus:    bus,
 		Hasher: hasher,
 		V:      v,
+		AuthMW: authMW.Authenticate,
 	})
 	userRepo := identityModule.UserRepository(db, txManager)
 
 	// Auth module.
 	authModule := auth.NewModule(auth.Deps{
-		DB:        db,
-		Tx:        txManager,
-		Cache:     redisCache,
-		Bus:       bus,
-		Hasher:    hasher,
-		Tokenizer: tokenizer,
-		V:         v,
-		Cfg:       cfg,
+		DB:             db,
+		Tx:             txManager,
+		Cache:          redisCache,
+		Bus:            bus,
+		Hasher:         hasher,
+		Tokenizer:      tokenizer,
+		V:              v,
+		Cfg:            cfg,
+		TokenBlacklist: tokenBlacklist,
 	}, userRepo)
 
 	server.Router().Mount("/api/v1/users", identityModule.UserRouter())

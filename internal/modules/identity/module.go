@@ -2,6 +2,8 @@
 package identity
 
 import (
+	"net/http"
+
 	"github.com/elite4print/elite4print-go/internal/modules/identity/application/commands"
 	"github.com/elite4print/elite4print-go/internal/modules/identity/application/queries"
 	"github.com/elite4print/elite4print-go/internal/modules/identity/domain"
@@ -27,6 +29,8 @@ type Deps struct {
 	Bus    eventbus.EventBus
 	Hasher password.Hasher
 	V      validator.Validator
+	// AuthMW protects identity routes. It is provided by the auth module.
+	AuthMW func(http.Handler) http.Handler
 }
 
 // NewModule builds and wires the identity module.
@@ -41,7 +45,7 @@ func NewModule(deps Deps) *Module {
 	handler := identityHTTP.NewUserHandler(register, update, getUser, listUsers, deps.V)
 
 	return &Module{
-		userRouter: identityHTTP.NewUserRouter(handler),
+		userRouter: identityHTTP.NewUserRouter(handler, deps.AuthMW),
 	}
 }
 
