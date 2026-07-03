@@ -9,6 +9,10 @@ import (
 	"log"
 	"log/slog"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	_ "github.com/elite4print/elite4print-go/docs" // swagger docs
 	"github.com/elite4print/elite4print-go/internal/modules/auth"
@@ -48,7 +52,7 @@ func main() {
 	db, err := database.NewPool(cfg)
 	if err != nil {
 		log.Error("failed to connect to database", slog.Any("error", err))
-		return
+		os.Exit(1)
 	}
 	defer db.Close()
 
@@ -111,7 +115,20 @@ func main() {
 	// Swagger UI.
 	server.Router().Get("/swagger/*", httpSwagger.WrapHandler)
 
-	if err := server.Start(); err != nil {
-		log.Error("server crashed", slog.Any("error", err))
+	if err := server.ListenAndServe(); err != nil {
+		log.Error("failed to start server", slog.Any("error", err))
+		os.Exit(1)
+	}
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	log.Info("shutting down server")
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	if err := server.Shutdown(shutdownCtx); err != nil {
+		log.Error("server forced to shutdown", slog.Any("error", err))
+		os.Exit(1)
 	}
 }

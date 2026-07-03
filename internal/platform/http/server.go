@@ -2,7 +2,9 @@
 package http
 
 import (
+	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/elite4print/elite4print-go/internal/platform/config"
@@ -17,6 +19,7 @@ type Server struct {
 	cfg    *config.Config
 	router *chi.Mux
 	log    logger.Logger
+	http   *http.Server
 }
 
 // NewServer creates a server with common middleware mounted.
@@ -47,9 +50,31 @@ func (s *Server) Router() *chi.Mux {
 	return s.router
 }
 
-// Start runs the HTTP server.
-func (s *Server) Start() error {
+// ListenAndServe starts the HTTP server in a non-blocking way.
+// The caller is responsible for waiting on a shutdown signal and calling
+// Shutdown to drain active connections.
+func (s *Server) ListenAndServe() error {
 	addr := fmt.Sprintf("%s:%s", s.cfg.HTTPHost, s.cfg.HTTPPort)
+	s.http = &http.Server{
+		Addr:    addr,
+		Handler: s.router,
+	}
+
 	s.log.Info("starting http server", "address", addr)
-	return http.ListenAndServe(addr, s.router)
+	go func() {
+		if err := s.http.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			s.log.Error("http server error", slog.Any("error", err))
+		}
+	}()
+
+	return nil
+}
+
+// Shutdown gracefully stops the HTTP server.
+func (s *Server) Shutdown(ctx context.Context) error {
+	if s.http == nil {
+		return nil
+	}
+	s.log.Info("shutting down http server")
+	return s.http.Shutdown(ctx)
 }
