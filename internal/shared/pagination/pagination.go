@@ -1,9 +1,9 @@
 // Package pagination provides a reusable request/response model for list endpoints.
 //
 // Why not cursor-based pagination?
-// - Offset/limit is simpler for admin dashboards and matches the existing
-//   Elite4Print frontend expectations.
-// - Cursor pagination can be added later for high-volume customer-facing lists.
+//   - Offset/limit is simpler for admin dashboards and matches the existing
+//     Elite4Print frontend expectations.
+//   - Cursor pagination can be added later for high-volume customer-facing lists.
 package pagination
 
 import (

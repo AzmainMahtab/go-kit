@@ -19,19 +19,19 @@ import (
 	authcache "github.com/elite4print/elite4print-go/internal/modules/auth/infrastructure/cache"
 	authHTTP "github.com/elite4print/elite4print-go/internal/modules/auth/presentation/http"
 	"github.com/elite4print/elite4print-go/internal/modules/identity"
-	"github.com/elite4print/elite4print-go/internal/platform/http/responses"
-	httpSwagger "github.com/swaggo/http-swagger"
 	"github.com/elite4print/elite4print-go/internal/platform/cache"
 	"github.com/elite4print/elite4print-go/internal/platform/config"
 	"github.com/elite4print/elite4print-go/internal/platform/database"
+	"github.com/elite4print/elite4print-go/internal/platform/health"
 	platformhttp "github.com/elite4print/elite4print-go/internal/platform/http"
 	"github.com/elite4print/elite4print-go/internal/platform/http/middleware"
-	"github.com/elite4print/elite4print-go/internal/platform/health"
+	"github.com/elite4print/elite4print-go/internal/platform/http/responses"
 	"github.com/elite4print/elite4print-go/internal/shared/eventbus"
 	"github.com/elite4print/elite4print-go/internal/shared/logger"
 	"github.com/elite4print/elite4print-go/internal/shared/password"
 	"github.com/elite4print/elite4print-go/internal/shared/token"
 	"github.com/elite4print/elite4print-go/internal/shared/validator"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 // @title Elite4Print Go API

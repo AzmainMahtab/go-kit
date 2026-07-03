@@ -30,9 +30,9 @@ type Login struct {
 
 // LoginConfig holds TTLs for tokens.
 type LoginConfig struct {
-	AccessTTL        time.Duration
-	RefreshTTL       time.Duration
-	MaxConcurrent    int
+	AccessTTL     time.Duration
+	RefreshTTL    time.Duration
+	MaxConcurrent int
 }
 
 // NewLogin creates the login use case.

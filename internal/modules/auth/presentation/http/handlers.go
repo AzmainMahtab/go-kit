@@ -18,13 +18,13 @@ import (
 
 // AuthHandler holds auth HTTP handlers.
 type AuthHandler struct {
-	login            *commands.Login
-	logout           *commands.Logout
-	refresh          *commands.Refresh
-	revokeSession    *commands.RevokeSession
-	revokeAll        *commands.RevokeAllSessions
-	listSessions     *queries.ListSessions
-	v                validator.Validator
+	login         *commands.Login
+	logout        *commands.Logout
+	refresh       *commands.Refresh
+	revokeSession *commands.RevokeSession
+	revokeAll     *commands.RevokeAllSessions
+	listSessions  *queries.ListSessions
+	v             validator.Validator
 }
 
 // NewAuthHandler creates a handler group.

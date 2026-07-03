@@ -15,10 +15,10 @@ import (
 
 // RegisterUser handles new user registration.
 type RegisterUser struct {
-	repo    domain.UserRepository
-	bus     eventbus.EventBus
-	hasher  password.Hasher
-	v       validator.Validator
+	repo   domain.UserRepository
+	bus    eventbus.EventBus
+	hasher password.Hasher
+	v      validator.Validator
 }
 
 // NewRegisterUser creates the use case.

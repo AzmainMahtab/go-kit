@@ -52,9 +52,9 @@ func NewModule(deps Deps, userRepo identitydomain.UserRepository) *Module {
 	}
 
 	loginCfg := commands.LoginConfig{
-		AccessTTL:        deps.Cfg.JWTAccessTTL,
-		RefreshTTL:       deps.Cfg.JWTRefreshTTL,
-		MaxConcurrent:    deps.Cfg.SessionMaxConcurrent,
+		AccessTTL:     deps.Cfg.JWTAccessTTL,
+		RefreshTTL:    deps.Cfg.JWTRefreshTTL,
+		MaxConcurrent: deps.Cfg.SessionMaxConcurrent,
 	}
 	refreshCfg := commands.RefreshConfig{
 		AccessTTL:  deps.Cfg.JWTAccessTTL,

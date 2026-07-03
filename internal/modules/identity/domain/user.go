@@ -17,14 +17,14 @@ import (
 type Role string
 
 const (
-	RoleCustomer       Role = "customer"
-	RoleReseller       Role = "reseller"
-	RoleAdmin          Role = "admin"
-	RoleManagement     Role = "management"
-	RoleAccountant     Role = "accountant"
+	RoleCustomer        Role = "customer"
+	RoleReseller        Role = "reseller"
+	RoleAdmin           Role = "admin"
+	RoleManagement      Role = "management"
+	RoleAccountant      Role = "accountant"
 	RoleCustomerService Role = "customer_service"
-	RoleOperator       Role = "operator"
-	RoleHR             Role = "hr"
+	RoleOperator        Role = "operator"
+	RoleHR              Role = "hr"
 )
 
 // UserStatus represents the lifecycle state of a user account.
@@ -121,14 +121,14 @@ func (e Email) String() string { return e.value }
 
 // Domain errors.
 var (
-	ErrEmailRequired     = errors.New("email is required")
-	ErrInvalidEmail      = errors.New("invalid email address")
-	ErrUserNotFound      = errors.New("user not found")
-	ErrUserAlreadyExists = errors.New("user already exists")
-	ErrUserInactive      = errors.New("user account is inactive")
-	ErrUserSuspended     = errors.New("user account is suspended")
-	ErrUserDeleted       = errors.New("user account is deleted")
-	ErrWeakPassword           = errors.New("password does not meet strength requirements")
-	ErrPasswordMismatch       = errors.New("passwords do not match")
+	ErrEmailRequired           = errors.New("email is required")
+	ErrInvalidEmail            = errors.New("invalid email address")
+	ErrUserNotFound            = errors.New("user not found")
+	ErrUserAlreadyExists       = errors.New("user already exists")
+	ErrUserInactive            = errors.New("user account is inactive")
+	ErrUserSuspended           = errors.New("user account is suspended")
+	ErrUserDeleted             = errors.New("user account is deleted")
+	ErrWeakPassword            = errors.New("password does not meet strength requirements")
+	ErrPasswordMismatch        = errors.New("passwords do not match")
 	ErrInvalidStatusTransition = errors.New("invalid status transition")
 )

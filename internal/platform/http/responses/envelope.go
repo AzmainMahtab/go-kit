@@ -23,13 +23,13 @@ import (
 
 // Envelope is the standard API response wrapper.
 type Envelope[T any] struct {
-	StatusCode int         `json:"status_code"`
-	Data       T           `json:"data,omitempty"`
-	Count      int         `json:"count,omitempty"`
-	TotalPages int         `json:"total_pages,omitempty"`
-	Links      any         `json:"links,omitempty"`
-	Message    string      `json:"message,omitempty"`
-	Status     string      `json:"status"`
+	StatusCode int    `json:"status_code"`
+	Data       T      `json:"data,omitempty"`
+	Count      int    `json:"count,omitempty"`
+	TotalPages int    `json:"total_pages,omitempty"`
+	Links      any    `json:"links,omitempty"`
+	Message    string `json:"message,omitempty"`
+	Status     string `json:"status"`
 }
 
 // Success creates a success envelope.
