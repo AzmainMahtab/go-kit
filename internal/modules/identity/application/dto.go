@@ -51,17 +51,17 @@ type ListUsersQuery struct {
 
 // UserResult is the canonical user DTO returned by use cases.
 type UserResult struct {
-	ID            uuid.UUID          `json:"id"`
-	Email         string             `json:"email"`
-	FirstName     string             `json:"first_name"`
-	LastName      string             `json:"last_name"`
-	Phone         string             `json:"phone,omitempty"`
-	CompanyName   string             `json:"company_name,omitempty"`
-	Role          string             `json:"role"`
-	Status        domain.UserStatus  `json:"status"`
-	EmailVerified bool               `json:"email_verified"`
-	CreatedAt     time.Time          `json:"created_at"`
-	UpdatedAt     time.Time          `json:"updated_at"`
+	ID            uuid.UUID         `json:"id"`
+	Email         string            `json:"email"`
+	FirstName     string            `json:"first_name"`
+	LastName      string            `json:"last_name"`
+	Phone         string            `json:"phone,omitempty"`
+	CompanyName   string            `json:"company_name,omitempty"`
+	Role          string            `json:"role"`
+	Status        domain.UserStatus `json:"status"`
+	EmailVerified bool              `json:"email_verified"`
+	CreatedAt     time.Time         `json:"created_at"`
+	UpdatedAt     time.Time         `json:"updated_at"`
 }
 
 // ToUserResult maps a domain.User to a UserResult.

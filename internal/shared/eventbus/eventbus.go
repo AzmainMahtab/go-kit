@@ -1,10 +1,10 @@
 // Package eventbus defines the domain event bus port.
 //
 // Why an event bus?
-// - Modules must not call each other directly (no import cycles).
-// - Side effects (email, cache invalidation, analytics) react to domain events.
-// - In the future the in-memory bus can be swapped for NATS/Kafka without
-//   touching domain or application code.
+//   - Modules must not call each other directly (no import cycles).
+//   - Side effects (email, cache invalidation, analytics) react to domain events.
+//   - In the future the in-memory bus can be swapped for NATS/Kafka without
+//     touching domain or application code.
 package eventbus
 
 import "context"

@@ -26,7 +26,8 @@ type Claims struct {
 // Tokenizer is the domain port for creating and validating tokens.
 type Tokenizer interface {
 	GenerateAccessToken(userID, sessionID uuid.UUID, email, role string, ttl time.Duration) (string, error)
-	GenerateRefreshToken(sessionID uuid.UUID, ttl time.Duration) (string, error)
+	// GenerateRefreshToken returns the signed refresh token and its JTI.
+	GenerateRefreshToken(sessionID uuid.UUID, ttl time.Duration) (token string, jti string, err error)
 	ParseAccessToken(ctx context.Context, tokenString string) (*Claims, error)
 	ParseRefreshToken(ctx context.Context, tokenString string) (uuid.UUID, error)
 }
@@ -64,16 +65,21 @@ func (t *jwtTokenizer) GenerateAccessToken(userID, sessionID uuid.UUID, email, r
 	return token.SignedString(t.secret)
 }
 
-func (t *jwtTokenizer) GenerateRefreshToken(sessionID uuid.UUID, ttl time.Duration) (string, error) {
+func (t *jwtTokenizer) GenerateRefreshToken(sessionID uuid.UUID, ttl time.Duration) (string, string, error) {
 	now := time.Now()
+	jti := uuid.Must(uuid.NewV7()).String()
 	claims := jwt.RegisteredClaims{
 		Subject:   sessionID.String(),
 		IssuedAt:  jwt.NewNumericDate(now),
 		ExpiresAt: jwt.NewNumericDate(now.Add(ttl)),
-		ID:        uuid.Must(uuid.NewV7()).String(),
+		ID:        jti,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(t.secret)
+	tokenString, err := token.SignedString(t.secret)
+	if err != nil {
+		return "", "", err
+	}
+	return tokenString, jti, nil
 }
 
 func (t *jwtTokenizer) ParseAccessToken(ctx context.Context, tokenString string) (*Claims, error) {

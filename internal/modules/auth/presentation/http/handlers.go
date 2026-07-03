@@ -18,13 +18,13 @@ import (
 
 // AuthHandler holds auth HTTP handlers.
 type AuthHandler struct {
-	login            *commands.Login
-	logout           *commands.Logout
-	refresh          *commands.Refresh
-	revokeSession    *commands.RevokeSession
-	revokeAll        *commands.RevokeAllSessions
-	listSessions     *queries.ListSessions
-	v                validator.Validator
+	login         *commands.Login
+	logout        *commands.Logout
+	refresh       *commands.Refresh
+	revokeSession *commands.RevokeSession
+	revokeAll     *commands.RevokeAllSessions
+	listSessions  *queries.ListSessions
+	v             validator.Validator
 }
 
 // NewAuthHandler creates a handler group.
@@ -77,7 +77,11 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 // Logout handles POST /auth/logout.
 func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
-	user := CurrentUserFromContext(r.Context())
+	user, ok := CurrentUserFromContext(r.Context())
+	if !ok {
+		responses.Unauthorized(w, "missing user identity")
+		return
+	}
 	accessJTI := r.Context().Value(accessJTIKey{}).(string)
 
 	if err := h.logout.Handle(r.Context(), application.LogoutCommand{
@@ -111,7 +115,11 @@ func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 
 // ListSessions handles GET /auth/sessions.
 func (h *AuthHandler) ListSessions(w http.ResponseWriter, r *http.Request) {
-	user := CurrentUserFromContext(r.Context())
+	user, ok := CurrentUserFromContext(r.Context())
+	if !ok {
+		responses.Unauthorized(w, "missing user identity")
+		return
+	}
 
 	sessions, err := h.listSessions.Execute(r.Context(), application.ListSessionsQuery{UserID: user.UserID}, user.SessionID)
 	if err != nil {
@@ -129,7 +137,11 @@ func (h *AuthHandler) ListSessions(w http.ResponseWriter, r *http.Request) {
 
 // RevokeSession handles POST /auth/sessions/{id}/revoke.
 func (h *AuthHandler) RevokeSession(w http.ResponseWriter, r *http.Request) {
-	user := CurrentUserFromContext(r.Context())
+	user, ok := CurrentUserFromContext(r.Context())
+	if !ok {
+		responses.Unauthorized(w, "missing user identity")
+		return
+	}
 	sessionID, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		responses.BadRequest(w, errors.New("invalid session id"))
@@ -149,7 +161,11 @@ func (h *AuthHandler) RevokeSession(w http.ResponseWriter, r *http.Request) {
 
 // RevokeAllSessions handles POST /auth/sessions/revoke-all.
 func (h *AuthHandler) RevokeAllSessions(w http.ResponseWriter, r *http.Request) {
-	user := CurrentUserFromContext(r.Context())
+	user, ok := CurrentUserFromContext(r.Context())
+	if !ok {
+		responses.Unauthorized(w, "missing user identity")
+		return
+	}
 
 	if err := h.revokeAll.Handle(r.Context(), application.RevokeAllSessionsCommand{
 		UserID:           user.UserID,

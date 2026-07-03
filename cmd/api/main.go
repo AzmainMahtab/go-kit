@@ -9,22 +9,29 @@ import (
 	"log"
 	"log/slog"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	_ "github.com/elite4print/elite4print-go/docs" // swagger docs
 	"github.com/elite4print/elite4print-go/internal/modules/auth"
-	"github.com/elite4print/elite4print-go/internal/platform/http/responses"
-	httpSwagger "github.com/swaggo/http-swagger"
+	authcache "github.com/elite4print/elite4print-go/internal/modules/auth/infrastructure/cache"
+	authHTTP "github.com/elite4print/elite4print-go/internal/modules/auth/presentation/http"
 	"github.com/elite4print/elite4print-go/internal/modules/identity"
 	"github.com/elite4print/elite4print-go/internal/platform/cache"
 	"github.com/elite4print/elite4print-go/internal/platform/config"
 	"github.com/elite4print/elite4print-go/internal/platform/database"
+	"github.com/elite4print/elite4print-go/internal/platform/health"
 	platformhttp "github.com/elite4print/elite4print-go/internal/platform/http"
 	"github.com/elite4print/elite4print-go/internal/platform/http/middleware"
+	"github.com/elite4print/elite4print-go/internal/platform/http/responses"
 	"github.com/elite4print/elite4print-go/internal/shared/eventbus"
 	"github.com/elite4print/elite4print-go/internal/shared/logger"
 	"github.com/elite4print/elite4print-go/internal/shared/password"
 	"github.com/elite4print/elite4print-go/internal/shared/token"
 	"github.com/elite4print/elite4print-go/internal/shared/validator"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 // @title Elite4Print Go API
@@ -46,7 +53,7 @@ func main() {
 	db, err := database.NewPool(cfg)
 	if err != nil {
 		log.Error("failed to connect to database", slog.Any("error", err))
-		return
+		os.Exit(1)
 	}
 	defer db.Close()
 
@@ -57,6 +64,8 @@ func main() {
 		log.Warn("redis unreachable", slog.Any("error", err))
 	}
 	defer redisCache.Close()
+
+	healthChecker := health.NewChecker(db, redisCache.Client())
 
 	// Use in-memory event bus for the starter set. Swap for NATS JetStream when
 	// you are ready to run background workers across instances.
@@ -69,6 +78,11 @@ func main() {
 	rateLimiter := middleware.NewRateLimiter(redisCache, cfg.RateLimitRPS, cfg.RateLimitBurst)
 	server := platformhttp.NewServer(cfg, log, rateLimiter)
 
+	// Shared auth middleware is built before modules so it can protect identity
+	// routes as well as auth routes.
+	tokenBlacklist := authcache.NewRedisTokenBlacklist(redisCache)
+	authMW := authHTTP.NewAuthMiddleware(tokenizer, tokenBlacklist)
+
 	// Identity module.
 	identityModule := identity.NewModule(identity.Deps{
 		DB:     db,
@@ -76,19 +90,21 @@ func main() {
 		Bus:    bus,
 		Hasher: hasher,
 		V:      v,
+		AuthMW: authMW.Authenticate,
 	})
 	userRepo := identityModule.UserRepository(db, txManager)
 
 	// Auth module.
 	authModule := auth.NewModule(auth.Deps{
-		DB:        db,
-		Tx:        txManager,
-		Cache:     redisCache,
-		Bus:       bus,
-		Hasher:    hasher,
-		Tokenizer: tokenizer,
-		V:         v,
-		Cfg:       cfg,
+		DB:             db,
+		Tx:             txManager,
+		Cache:          redisCache,
+		Bus:            bus,
+		Hasher:         hasher,
+		Tokenizer:      tokenizer,
+		V:              v,
+		Cfg:            cfg,
+		TokenBlacklist: tokenBlacklist,
 	}, userRepo)
 
 	server.Router().Mount("/api/v1/users", identityModule.UserRouter())
@@ -96,13 +112,31 @@ func main() {
 
 	// Health check.
 	server.Router().Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		responses.OK(w, map[string]string{"status": "ok"})
+		result := healthChecker.Check(r.Context())
+		if result.Status == health.StatusDown {
+			responses.JSON(w, http.StatusServiceUnavailable, responses.Error(http.StatusServiceUnavailable, "HEALTH_CHECK_FAILED", "one or more dependencies are unavailable"))
+			return
+		}
+		responses.OK(w, result)
 	})
 
 	// Swagger UI.
 	server.Router().Get("/swagger/*", httpSwagger.WrapHandler)
 
-	if err := server.Start(); err != nil {
-		log.Error("server crashed", slog.Any("error", err))
+	if err := server.ListenAndServe(); err != nil {
+		log.Error("failed to start server", slog.Any("error", err))
+		os.Exit(1)
+	}
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	log.Info("shutting down server")
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	if err := server.Shutdown(shutdownCtx); err != nil {
+		log.Error("server forced to shutdown", slog.Any("error", err))
+		os.Exit(1)
 	}
 }

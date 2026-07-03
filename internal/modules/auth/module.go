@@ -2,8 +2,11 @@
 package auth
 
 import (
+	"net/http"
+
 	"github.com/elite4print/elite4print-go/internal/modules/auth/application/commands"
 	"github.com/elite4print/elite4print-go/internal/modules/auth/application/queries"
+	"github.com/elite4print/elite4print-go/internal/modules/auth/domain"
 	authcache "github.com/elite4print/elite4print-go/internal/modules/auth/infrastructure/cache"
 	"github.com/elite4print/elite4print-go/internal/modules/auth/infrastructure/persistence"
 	authHTTP "github.com/elite4print/elite4print-go/internal/modules/auth/presentation/http"
@@ -22,30 +25,36 @@ import (
 // Module is the public API of the auth bounded context.
 type Module struct {
 	authRouter chi.Router
+	authMW     *authHTTP.AuthMiddleware
 }
 
 // Deps contains the external dependencies auth needs.
 type Deps struct {
-	DB       *sqlx.DB
-	Tx       *database.TxManager
-	Cache    platformcache.Cache
-	Bus      eventbus.EventBus
-	Hasher   password.Hasher
-	Tokenizer token.Tokenizer
-	V        validator.Validator
-	Cfg      *config.Config
+	DB             *sqlx.DB
+	Tx             *database.TxManager
+	Cache          platformcache.Cache
+	Bus            eventbus.EventBus
+	Hasher         password.Hasher
+	Tokenizer      token.Tokenizer
+	V              validator.Validator
+	Cfg            *config.Config
+	TokenBlacklist domain.TokenBlacklist // optional; a new Redis adapter is created if nil
 }
 
 // NewModule builds and wires the auth module.
 func NewModule(deps Deps, userRepo identitydomain.UserRepository) *Module {
 	sessionRepo := persistence.NewPostgresSessionRepository(deps.DB, deps.Tx)
 	sessionCache := authcache.NewRedisSessionCache(deps.Cache)
-	tokenBlacklist := authcache.NewRedisTokenBlacklist(deps.Cache)
+
+	tokenBlacklist := deps.TokenBlacklist
+	if tokenBlacklist == nil {
+		tokenBlacklist = authcache.NewRedisTokenBlacklist(deps.Cache)
+	}
 
 	loginCfg := commands.LoginConfig{
-		AccessTTL:        deps.Cfg.JWTAccessTTL,
-		RefreshTTL:       deps.Cfg.JWTRefreshTTL,
-		MaxConcurrent:    deps.Cfg.SessionMaxConcurrent,
+		AccessTTL:     deps.Cfg.JWTAccessTTL,
+		RefreshTTL:    deps.Cfg.JWTRefreshTTL,
+		MaxConcurrent: deps.Cfg.SessionMaxConcurrent,
 	}
 	refreshCfg := commands.RefreshConfig{
 		AccessTTL:  deps.Cfg.JWTAccessTTL,
@@ -64,10 +73,17 @@ func NewModule(deps Deps, userRepo identitydomain.UserRepository) *Module {
 
 	return &Module{
 		authRouter: authHTTP.NewAuthRouter(handler, authMW),
+		authMW:     authMW,
 	}
 }
 
 // AuthRouter returns the chi router for auth endpoints.
 func (m *Module) AuthRouter() chi.Router {
 	return m.authRouter
+}
+
+// AuthMiddleware returns the authentication middleware so other modules can
+// protect their routes without depending on auth's internal wiring.
+func (m *Module) AuthMiddleware() func(http.Handler) http.Handler {
+	return m.authMW.Authenticate
 }

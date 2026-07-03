@@ -35,6 +35,12 @@ func (r *Redis) Close() error {
 	return r.client.Close()
 }
 
+// Client exposes the underlying go-redis client for health checks and
+// advanced use cases.
+func (r *Redis) Client() *redis.Client {
+	return r.client
+}
+
 // Get retrieves a string value.
 func (r *Redis) Get(ctx context.Context, key string) (string, error) {
 	val, err := r.client.Get(ctx, key).Result()

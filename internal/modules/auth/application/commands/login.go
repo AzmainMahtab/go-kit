@@ -30,9 +30,9 @@ type Login struct {
 
 // LoginConfig holds TTLs for tokens.
 type LoginConfig struct {
-	AccessTTL        time.Duration
-	RefreshTTL       time.Duration
-	MaxConcurrent    int
+	AccessTTL     time.Duration
+	RefreshTTL    time.Duration
+	MaxConcurrent int
 }
 
 // NewLogin creates the login use case.
@@ -116,10 +116,11 @@ func (uc *Login) Handle(ctx context.Context, cmd application.LoginCommand) (appl
 		LastUsedAt: now,
 	}
 
-	refreshToken, err := uc.tokenizer.GenerateRefreshToken(session.ID, uc.cfg.RefreshTTL)
+	refreshToken, refreshJTI, err := uc.tokenizer.GenerateRefreshToken(session.ID, uc.cfg.RefreshTTL)
 	if err != nil {
 		return application.TokenPairResult{}, fmt.Errorf("login: %w", err)
 	}
+	session.RefreshJTI = refreshJTI
 
 	accessToken, err := uc.tokenizer.GenerateAccessToken(user.ID, session.ID, user.Email.String(), string(user.Role), uc.cfg.AccessTTL)
 	if err != nil {

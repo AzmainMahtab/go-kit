@@ -39,7 +39,7 @@ type RevokeSessionCommand struct {
 
 // RevokeAllSessionsCommand revokes all sessions except the current one.
 type RevokeAllSessionsCommand struct {
-	UserID          uuid.UUID `validate:"required"`
+	UserID           uuid.UUID `validate:"required"`
 	CurrentSessionID uuid.UUID `validate:"required"`
 }
 

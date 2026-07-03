@@ -50,7 +50,9 @@ func (uc *UpdateUser) Handle(ctx context.Context, cmd application.UpdateUserComm
 		user.CompanyName = *cmd.CompanyName
 	}
 	if cmd.Status != nil {
-		user.Status = *cmd.Status
+		if err := user.TransitionStatus(*cmd.Status); err != nil {
+			return application.UserResult{}, err
+		}
 	}
 
 	user.UpdatedAt = time.Now().UTC()

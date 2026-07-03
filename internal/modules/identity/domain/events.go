@@ -9,9 +9,9 @@ import (
 
 // UserRegisteredEvent is published when a new user registers.
 type UserRegisteredEvent struct {
-	UserID    uuid.UUID `json:"user_id"`
-	Email     string    `json:"email"`
-	Role      string    `json:"role"`
+	UserID     uuid.UUID `json:"user_id"`
+	Email      string    `json:"email"`
+	Role       string    `json:"role"`
 	OccurredAt time.Time `json:"occurred_at"`
 }
 

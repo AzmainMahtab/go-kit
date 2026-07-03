@@ -110,7 +110,8 @@ func (r *PostgresSessionRepository) Update(ctx context.Context, session *domain.
 	m.LastUsedAt = now()
 	query := `
 		UPDATE identity.sessions
-		SET last_used_at = :last_used_at
+		SET last_used_at = :last_used_at,
+		    refresh_jti = :refresh_jti
 		WHERE id = :id
 	`
 	_, err := r.exec(ctx).NamedExecContext(ctx, query, m)

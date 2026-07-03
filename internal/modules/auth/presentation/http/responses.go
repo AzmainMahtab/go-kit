@@ -29,13 +29,13 @@ func FromTokenPairResult(r application.TokenPairResult) TokenPairResponse {
 
 // SessionResponse is the HTTP representation of a session.
 type SessionResponse struct {
-	ID         string     `json:"id"`
-	IP         string     `json:"ip"`
-	UserAgent  string     `json:"user_agent"`
-	CreatedAt  time.Time  `json:"created_at"`
-	ExpiresAt  time.Time  `json:"expires_at"`
-	LastUsedAt time.Time  `json:"last_used_at"`
-	IsCurrent  bool       `json:"is_current"`
+	ID         string    `json:"id"`
+	IP         string    `json:"ip"`
+	UserAgent  string    `json:"user_agent"`
+	CreatedAt  time.Time `json:"created_at"`
+	ExpiresAt  time.Time `json:"expires_at"`
+	LastUsedAt time.Time `json:"last_used_at"`
+	IsCurrent  bool      `json:"is_current"`
 }
 
 // FromSessionResult maps a session result.

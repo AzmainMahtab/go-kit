@@ -40,11 +40,11 @@ type Config struct {
 	NATSURL string `env:"NATS_URL" envDefault:"nats://localhost:4222"`
 
 	// ---- Security ----------------------------------------------------------
-	JWTSecretKey   string        `env:"JWT_SECRET_KEY" envDefault:"dev-secret-replace-in-production"`
-	JWTAccessTTL   time.Duration `env:"JWT_ACCESS_TTL" envDefault:"15m"`
-	JWTRefreshTTL  time.Duration `env:"JWT_REFRESH_TTL" envDefault:"7d"`
-	SessionMaxAge  time.Duration `env:"SESSION_MAX_AGE" envDefault:"7d"`
-	SessionMaxConcurrent int    `env:"SESSION_MAX_CONCURRENT" envDefault:"5"`
+	JWTSecretKey         string        `env:"JWT_SECRET_KEY" envDefault:"dev-secret-replace-in-production"`
+	JWTAccessTTL         time.Duration `env:"JWT_ACCESS_TTL" envDefault:"15m"`
+	JWTRefreshTTL        time.Duration `env:"JWT_REFRESH_TTL" envDefault:"7d"`
+	SessionMaxAge        time.Duration `env:"SESSION_MAX_AGE" envDefault:"7d"`
+	SessionMaxConcurrent int           `env:"SESSION_MAX_CONCURRENT" envDefault:"5"`
 
 	// ---- Rate limiting -----------------------------------------------------
 	RateLimitRPS   int `env:"RATE_LIMIT_RPS" envDefault:"10"`

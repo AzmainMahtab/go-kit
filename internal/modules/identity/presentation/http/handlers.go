@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	authhttp "github.com/elite4print/elite4print-go/internal/modules/auth/presentation/http"
 	"github.com/elite4print/elite4print-go/internal/modules/identity/application"
 	"github.com/elite4print/elite4print-go/internal/modules/identity/application/commands"
 	"github.com/elite4print/elite4print-go/internal/modules/identity/application/queries"
@@ -72,10 +73,21 @@ func (h *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetByID handles GET /users/{id}.
+// Users can read their own profile; admins and management can read any profile.
 func (h *UserHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		responses.BadRequest(w, errors.New("invalid user id"))
+		return
+	}
+
+	current, ok := authhttp.CurrentUserFromContext(r.Context())
+	if !ok {
+		responses.Unauthorized(w, "missing user identity")
+		return
+	}
+	if !canAccessUser(current, id) {
+		responses.Forbidden(w, "insufficient permissions")
 		return
 	}
 
@@ -89,6 +101,8 @@ func (h *UserHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 }
 
 // Update handles PATCH /users/{id}.
+// Users can update their own profile; admins and management can update any
+// profile. Only admins and management can change a user's status.
 func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
@@ -96,9 +110,25 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	current, ok := authhttp.CurrentUserFromContext(r.Context())
+	if !ok {
+		responses.Unauthorized(w, "missing user identity")
+		return
+	}
+	if !canAccessUser(current, id) {
+		responses.Forbidden(w, "insufficient permissions")
+		return
+	}
+
 	var req UpdateUserRequest
 	if err := decodeAndValidate(r, h.v, &req); err != nil {
 		responses.BadRequest(w, err)
+		return
+	}
+
+	// Non-admins cannot change account status.
+	if req.Status != nil && !canManageUsers(current.Role) {
+		responses.Forbidden(w, "insufficient permissions to change status")
 		return
 	}
 
@@ -115,7 +145,18 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 }
 
 // List handles GET /users.
+// Only admins and management can list all users.
 func (h *UserHandler) List(w http.ResponseWriter, r *http.Request) {
+	current, ok := authhttp.CurrentUserFromContext(r.Context())
+	if !ok {
+		responses.Unauthorized(w, "missing user identity")
+		return
+	}
+	if !canManageUsers(current.Role) {
+		responses.Forbidden(w, "insufficient permissions")
+		return
+	}
+
 	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
 	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
 	if limit == 0 {
@@ -156,7 +197,7 @@ func (h *UserHandler) mapError(w http.ResponseWriter, err error) {
 		responses.Conflict(w, err.Error())
 	case errors.Is(err, domain.ErrInvalidEmail) || errors.Is(err, domain.ErrEmailRequired):
 		responses.BadRequest(w, err)
-	case errors.Is(err, domain.ErrWeakPassword), errors.Is(err, domain.ErrPasswordMismatch):
+	case errors.Is(err, domain.ErrWeakPassword), errors.Is(err, domain.ErrPasswordMismatch), errors.Is(err, domain.ErrInvalidStatusTransition):
 		responses.BadRequest(w, err)
 	case errors.As(err, &valErr):
 		responses.BadRequest(w, err)
@@ -173,4 +214,15 @@ func decodeAndValidate(r *http.Request, v validator.Validator, dst any) error {
 		return err
 	}
 	return v.ValidateStruct(dst)
+}
+
+// canManageUsers reports whether a role is allowed to perform administrative
+// actions on user accounts.
+func canManageUsers(role string) bool {
+	return role == string(domain.RoleAdmin) || role == string(domain.RoleManagement)
+}
+
+// canAccessUser reports whether the current caller may access the given user.
+func canAccessUser(current authhttp.CurrentUser, targetID uuid.UUID) bool {
+	return current.UserID == targetID || canManageUsers(current.Role)
 }

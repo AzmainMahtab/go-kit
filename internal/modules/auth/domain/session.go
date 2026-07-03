@@ -10,15 +10,15 @@ import (
 
 // Session represents an authenticated user session.
 type Session struct {
-	ID           uuid.UUID
-	UserID       uuid.UUID
-	RefreshJTI   string // JWT ID of the refresh token
-	IP           string
-	UserAgent    string
-	CreatedAt    time.Time
-	ExpiresAt    time.Time
-	LastUsedAt   time.Time
-	RevokedAt    *time.Time
+	ID         uuid.UUID
+	UserID     uuid.UUID
+	RefreshJTI string // JWT ID of the refresh token
+	IP         string
+	UserAgent  string
+	CreatedAt  time.Time
+	ExpiresAt  time.Time
+	LastUsedAt time.Time
+	RevokedAt  *time.Time
 }
 
 // IsActive reports whether the session has not expired or been revoked.

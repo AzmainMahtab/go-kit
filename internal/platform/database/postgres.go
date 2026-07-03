@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"github.com/elite4print/elite4print-go/internal/platform/config"
-	"github.com/jmoiron/sqlx"
 	_ "github.com/jackc/pgx/v5/stdlib" // pgx driver
+	"github.com/jmoiron/sqlx"
 )
 
 // NewPool returns a configured *sqlx.DB.
