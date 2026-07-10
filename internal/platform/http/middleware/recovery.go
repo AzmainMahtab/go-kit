@@ -3,8 +3,8 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/elite4print/elite4print-go/internal/platform/http/responses"
-	"github.com/elite4print/elite4print-go/internal/shared/logger"
+	"github.com/example/go-kit/internal/platform/http/responses"
+	"github.com/example/go-kit/internal/shared/logger"
 )
 
 // Recovery recovers from panics and returns a 500 response.

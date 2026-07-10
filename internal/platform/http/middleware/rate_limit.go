@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/elite4print/elite4print-go/internal/platform/cache"
-	"github.com/elite4print/elite4print-go/internal/platform/http/responses"
+	"github.com/example/go-kit/internal/platform/cache"
+	"github.com/example/go-kit/internal/platform/http/responses"
 )
 
 // RateLimiter uses a token-bucket algorithm backed by Redis.

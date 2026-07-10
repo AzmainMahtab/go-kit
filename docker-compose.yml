@@ -1,9 +1,9 @@
-name: elite4print-go
+name: go-kit
 
 services:
   postgres:
     image: postgres:18.4-alpine
-    container_name: elite4print-postgres
+    container_name: app-postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -20,7 +20,7 @@ services:
 
   redis:
     image: redis:8.8.0-alpine
-    container_name: elite4print-redis
+    container_name: app-redis
     ports:
       - "6379:6379"
     healthcheck:
@@ -31,7 +31,7 @@ services:
 
   nats:
     image: nats:2-alpine
-    container_name: elite4print-nats
+    container_name: app-nats
     command: "-js -m 8222"
     ports:
       - "4222:4222"
@@ -44,7 +44,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: ${DOCKER_TARGET:-production}
-    container_name: elite4print-api
+    container_name: app-api
     environment:
       ENVIRONMENT: ${ENVIRONMENT}
       HTTP_PORT: ${HTTP_PORT}

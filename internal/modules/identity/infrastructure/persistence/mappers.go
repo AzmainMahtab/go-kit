@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/elite4print/elite4print-go/internal/modules/identity/domain"
-	"github.com/elite4print/elite4print-go/internal/shared/password"
+	"github.com/example/go-kit/internal/modules/identity/domain"
+	"github.com/example/go-kit/internal/shared/password"
 	"github.com/google/uuid"
 )
 

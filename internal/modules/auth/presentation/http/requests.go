@@ -1,7 +1,7 @@
 package http
 
 import (
-	"github.com/elite4print/elite4print-go/internal/modules/auth/application"
+	"github.com/example/go-kit/internal/modules/auth/application"
 )
 
 // LoginRequest is the HTTP body for login.

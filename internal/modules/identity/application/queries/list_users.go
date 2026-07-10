@@ -3,10 +3,10 @@ package queries
 import (
 	"context"
 
-	"github.com/elite4print/elite4print-go/internal/modules/identity/application"
-	"github.com/elite4print/elite4print-go/internal/modules/identity/domain"
-	"github.com/elite4print/elite4print-go/internal/shared/pagination"
-	"github.com/elite4print/elite4print-go/internal/shared/validator"
+	"github.com/example/go-kit/internal/modules/identity/application"
+	"github.com/example/go-kit/internal/modules/identity/domain"
+	"github.com/example/go-kit/internal/shared/pagination"
+	"github.com/example/go-kit/internal/shared/validator"
 )
 
 // ListUsers handles paginated user listing.

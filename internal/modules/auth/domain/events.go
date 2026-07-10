@@ -3,7 +3,7 @@ package domain
 import (
 	"time"
 
-	"github.com/elite4print/elite4print-go/internal/shared/eventbus"
+	"github.com/example/go-kit/internal/shared/eventbus"
 	"github.com/google/uuid"
 )
 

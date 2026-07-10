@@ -1,4 +1,4 @@
-// Package responses provides the standard Elite4Print API response envelope.
+// Package responses provides the standard API response envelope.
 //
 // The existing Next.js and React dashboards expect this exact shape:
 //
@@ -17,8 +17,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/elite4print/elite4print-go/internal/shared/apperrors"
-	"github.com/elite4print/elite4print-go/internal/shared/pagination"
+	"github.com/example/go-kit/internal/shared/apperrors"
+	"github.com/example/go-kit/internal/shared/pagination"
 )
 
 // Envelope is the standard API response wrapper.

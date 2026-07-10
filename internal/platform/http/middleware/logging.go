@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/elite4print/elite4print-go/internal/shared/logger"
+	"github.com/example/go-kit/internal/shared/logger"
 	"github.com/go-chi/chi/v5/middleware"
 )
 

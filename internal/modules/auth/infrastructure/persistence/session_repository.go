@@ -6,8 +6,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/elite4print/elite4print-go/internal/modules/auth/domain"
-	"github.com/elite4print/elite4print-go/internal/platform/database"
+	"github.com/example/go-kit/internal/modules/auth/domain"
+	"github.com/example/go-kit/internal/platform/database"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 )

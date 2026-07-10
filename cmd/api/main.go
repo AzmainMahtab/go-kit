@@ -12,28 +12,28 @@ import (
 	"log/slog"
 	"os"
 
-	_ "github.com/elite4print/elite4print-go/docs" // swagger docs
-	"github.com/elite4print/elite4print-go/internal/modules/auth"
-	authcache "github.com/elite4print/elite4print-go/internal/modules/auth/infrastructure/cache"
-	authHTTP "github.com/elite4print/elite4print-go/internal/modules/auth/presentation/http"
-	"github.com/elite4print/elite4print-go/internal/modules/identity"
-	"github.com/elite4print/elite4print-go/internal/platform/cache"
-	"github.com/elite4print/elite4print-go/internal/platform/config"
-	"github.com/elite4print/elite4print-go/internal/platform/database"
-	"github.com/elite4print/elite4print-go/internal/platform/health"
-	platformhttp "github.com/elite4print/elite4print-go/internal/platform/http"
-	"github.com/elite4print/elite4print-go/internal/platform/http/middleware"
-	"github.com/elite4print/elite4print-go/internal/shared/eventbus"
-	"github.com/elite4print/elite4print-go/internal/shared/logger"
-	"github.com/elite4print/elite4print-go/internal/shared/password"
-	"github.com/elite4print/elite4print-go/internal/shared/token"
-	"github.com/elite4print/elite4print-go/internal/shared/validator"
+	_ "github.com/example/go-kit/docs" // swagger docs
+	"github.com/example/go-kit/internal/modules/auth"
+	authcache "github.com/example/go-kit/internal/modules/auth/infrastructure/cache"
+	authHTTP "github.com/example/go-kit/internal/modules/auth/presentation/http"
+	"github.com/example/go-kit/internal/modules/identity"
+	"github.com/example/go-kit/internal/platform/cache"
+	"github.com/example/go-kit/internal/platform/config"
+	"github.com/example/go-kit/internal/platform/database"
+	"github.com/example/go-kit/internal/platform/health"
+	platformhttp "github.com/example/go-kit/internal/platform/http"
+	"github.com/example/go-kit/internal/platform/http/middleware"
+	"github.com/example/go-kit/internal/shared/eventbus"
+	"github.com/example/go-kit/internal/shared/logger"
+	"github.com/example/go-kit/internal/shared/password"
+	"github.com/example/go-kit/internal/shared/token"
+	"github.com/example/go-kit/internal/shared/validator"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-// @title Elite4Print Go API
+// @title Go Kit API
 // @version 1.0
-// @description Modular monolith backend for Elite4Print.
+// @description Modular monolith backend starter kit.
 // @host localhost:8080
 // @BasePath /api/v1
 // @securityDefinitions.apikey BearerAuth

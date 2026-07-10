@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/elite4print/elite4print-go/internal/modules/auth/application"
-	"github.com/elite4print/elite4print-go/internal/modules/auth/domain"
-	identitydomain "github.com/elite4print/elite4print-go/internal/modules/identity/domain"
-	"github.com/elite4print/elite4print-go/internal/shared/token"
-	"github.com/elite4print/elite4print-go/internal/shared/validator"
+	"github.com/example/go-kit/internal/modules/auth/application"
+	"github.com/example/go-kit/internal/modules/auth/domain"
+	identitydomain "github.com/example/go-kit/internal/modules/identity/domain"
+	"github.com/example/go-kit/internal/shared/token"
+	"github.com/example/go-kit/internal/shared/validator"
 )
 
 // Refresh issues a new access token given a valid refresh token.

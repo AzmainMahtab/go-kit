@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/elite4print/elite4print-go/internal/platform/config"
+	"github.com/example/go-kit/internal/platform/config"
 	"github.com/redis/go-redis/v9"
 )
 

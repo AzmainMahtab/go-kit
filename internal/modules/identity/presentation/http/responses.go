@@ -1,7 +1,7 @@
 package http
 
 import (
-	"github.com/elite4print/elite4print-go/internal/modules/identity/application"
+	"github.com/example/go-kit/internal/modules/identity/application"
 )
 
 // UserResponse is the HTTP representation of a user.

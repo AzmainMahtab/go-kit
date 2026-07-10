@@ -1,8 +1,8 @@
 package http
 
 import (
-	"github.com/elite4print/elite4print-go/internal/modules/identity/application"
-	"github.com/elite4print/elite4print-go/internal/modules/identity/domain"
+	"github.com/example/go-kit/internal/modules/identity/application"
+	"github.com/example/go-kit/internal/modules/identity/domain"
 )
 
 // RegisterUserRequest is the HTTP body for registration.

@@ -1,6 +1,6 @@
 # Decimal for Money
 
-Elite4Print handles prices, taxes, discounts, shipping costs, and refunds. Using
+This project handles prices, taxes, discounts, shipping costs, and refunds. Using
 `float64` for money is dangerous because binary floating point cannot represent
 decimal values like `0.10` exactly, leading to rounding errors.
 
@@ -47,6 +47,5 @@ func NewMoney(amount decimal.Decimal, currency string) Money {
 
 ## Why not float64?
 
-The current Django backend uses `FloatField` for some money fields, which is one
-of the known financial-precision bugs. The Go rewrite fixes this by making
-`decimal.Decimal` the only money type.
+Using `decimal.Decimal` for money avoids the precision bugs common with floating
+point types and makes it the only money type in the domain.

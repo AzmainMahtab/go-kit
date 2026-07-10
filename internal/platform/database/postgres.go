@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/elite4print/elite4print-go/internal/platform/config"
+	"github.com/example/go-kit/internal/platform/config"
 	_ "github.com/jackc/pgx/v5/stdlib" // pgx driver
 	"github.com/jmoiron/sqlx"
 )

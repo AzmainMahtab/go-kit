@@ -1,6 +1,6 @@
 # Development overrides. Docker Compose merges this file automatically.
 # It enables hot reload by mounting the local source into the container.
-name: elite4print-go
+name: go-kit
 
 services:
   api:
