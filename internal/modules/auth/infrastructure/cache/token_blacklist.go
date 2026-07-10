@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	platformcache "github.com/elite4print/elite4print-go/internal/platform/cache"
+	platformcache "github.com/example/go-kit/internal/platform/cache"
 )
 
 // RedisTokenBlacklist implements domain.TokenBlacklist.

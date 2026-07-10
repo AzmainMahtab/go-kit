@@ -18,7 +18,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/elite4print/elite4print-go/internal/shared/eventbus"
+	"github.com/example/go-kit/internal/shared/eventbus"
 	"github.com/nats-io/nats.go"
 )
 

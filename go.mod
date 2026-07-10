@@ -1,4 +1,4 @@
-module github.com/elite4print/elite4print-go
+module github.com/example/go-kit
 
 go 1.26.4
 

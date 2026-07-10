@@ -1,6 +1,6 @@
-# Elite4Print Go Backend
+# Go Kit Backend
 
-A **modular monolith** backend for Elite4Print built with Go 1.26, following
+A **modular monolith** backend starter kit built with Go, following
 **Domain-Driven Design (DDD)** and **Hexagonal Architecture**.
 
 This starter set contains:
@@ -126,7 +126,7 @@ processes.
 To switch to NATS:
 
 ```go
-bus, err := platformnats.NewEventBus(cfg.NATSURL, "elite4print")
+bus, err := platformnats.NewEventBus(cfg.NATSURL, "app")
 ```
 
 Background jobs are published with `WorkerEnqueue` and consumed with
@@ -195,4 +195,4 @@ Each module is self-contained. To extract a module into a service:
 
 ## License
 
-Proprietary — Elite4Print.
+MIT License — see LICENSE for details.

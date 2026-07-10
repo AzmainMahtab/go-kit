@@ -6,7 +6,7 @@ package application
 import (
 	"time"
 
-	"github.com/elite4print/elite4print-go/internal/modules/identity/domain"
+	"github.com/example/go-kit/internal/modules/identity/domain"
 	"github.com/google/uuid"
 )
 

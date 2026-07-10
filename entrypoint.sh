@@ -1,15 +1,15 @@
 #!/bin/sh
 set -e
 
-# Environment-aware entrypoint for Elite4Print Go API.
+# Environment-aware entrypoint for Go Kit API.
 # - Production: runs compiled binary.
 # - Development: runs Air hot-reload (intended for docker-compose.override.yml).
 
 ENVIRONMENT="${ENVIRONMENT:-production}"
 POSTGRES_HOST="${POSTGRES_HOST:-postgres}"
 POSTGRES_PORT="${POSTGRES_PORT:-5432}"
-POSTGRES_USER="${POSTGRES_USER:-elite4print}"
-POSTGRES_DB="${POSTGRES_DB:-elite4print}"
+POSTGRES_USER="${POSTGRES_USER:-app}"
+POSTGRES_DB="${POSTGRES_DB:-appdb}"
 POSTGRES_DSN="${POSTGRES_DSN:-}"
 
 echo ">>> Environment: ${ENVIRONMENT}"

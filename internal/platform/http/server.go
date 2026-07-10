@@ -13,11 +13,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/elite4print/elite4print-go/internal/platform/config"
-	"github.com/elite4print/elite4print-go/internal/platform/health"
-	"github.com/elite4print/elite4print-go/internal/platform/http/middleware"
-	"github.com/elite4print/elite4print-go/internal/platform/http/responses"
-	"github.com/elite4print/elite4print-go/internal/shared/logger"
+	"github.com/example/go-kit/internal/platform/config"
+	"github.com/example/go-kit/internal/platform/health"
+	"github.com/example/go-kit/internal/platform/http/middleware"
+	"github.com/example/go-kit/internal/platform/http/responses"
+	"github.com/example/go-kit/internal/shared/logger"
 	"github.com/go-chi/chi/v5"
 	chiMW "github.com/go-chi/chi/v5/middleware"
 )

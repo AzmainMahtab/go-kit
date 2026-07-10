@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/elite4print/elite4print-go/internal/modules/auth/domain"
-	"github.com/elite4print/elite4print-go/internal/platform/http/responses"
-	"github.com/elite4print/elite4print-go/internal/shared/token"
+	"github.com/example/go-kit/internal/modules/auth/domain"
+	"github.com/example/go-kit/internal/platform/http/responses"
+	"github.com/example/go-kit/internal/shared/token"
 	"github.com/google/uuid"
 )
 

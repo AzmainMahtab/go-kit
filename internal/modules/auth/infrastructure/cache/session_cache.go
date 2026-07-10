@@ -5,8 +5,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/elite4print/elite4print-go/internal/modules/auth/domain"
-	platformcache "github.com/elite4print/elite4print-go/internal/platform/cache"
+	"github.com/example/go-kit/internal/modules/auth/domain"
+	platformcache "github.com/example/go-kit/internal/platform/cache"
 	"github.com/google/uuid"
 )
 

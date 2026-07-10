@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/elite4print/elite4print-go/internal/modules/auth/application"
-	"github.com/elite4print/elite4print-go/internal/modules/auth/domain"
-	"github.com/elite4print/elite4print-go/internal/shared/validator"
+	"github.com/example/go-kit/internal/modules/auth/application"
+	"github.com/example/go-kit/internal/modules/auth/domain"
+	"github.com/example/go-kit/internal/shared/validator"
 	"github.com/google/uuid"
 )
 

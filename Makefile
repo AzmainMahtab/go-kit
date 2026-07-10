@@ -4,7 +4,7 @@
 -include .env
 export
 
-API_CONTAINER = elite4print-api
+API_CONTAINER = app-api
 MIGRATE_DIR = migrations
 
 # ==========================================
@@ -12,7 +12,7 @@ MIGRATE_DIR = migrations
 # ==========================================
 
 help: ## Show this help menu
-	@echo "Elite4Print Go Backend Commands:"
+	@echo "Go Kit Backend Commands:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 up: ## Start production stack (Postgres + Redis + NATS + API)

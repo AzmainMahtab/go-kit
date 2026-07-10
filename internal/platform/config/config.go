@@ -24,9 +24,9 @@ type Config struct {
 	// ---- PostgreSQL --------------------------------------------------------
 	PostgresHost     string `env:"POSTGRES_HOST" envDefault:"localhost"`
 	PostgresPort     int    `env:"POSTGRES_PORT" envDefault:"5432"`
-	PostgresUser     string `env:"POSTGRES_USER" envDefault:"elite4print"`
-	PostgresPassword string `env:"POSTGRES_PASSWORD" envDefault:"elite4print"`
-	PostgresDB       string `env:"POSTGRES_DB" envDefault:"elite4print"`
+	PostgresUser     string `env:"POSTGRES_USER" envDefault:"app"`
+	PostgresPassword string `env:"POSTGRES_PASSWORD" envDefault:"app"`
+	PostgresDB       string `env:"POSTGRES_DB" envDefault:"appdb"`
 	PostgresSSLMode  string `env:"POSTGRES_SSLMODE" envDefault:"disable"`
 	PostgresDSN      string `env:"POSTGRES_DSN" envDefault:""`
 

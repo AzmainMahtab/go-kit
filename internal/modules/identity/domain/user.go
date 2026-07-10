@@ -9,11 +9,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/elite4print/elite4print-go/internal/shared/password"
+	"github.com/example/go-kit/internal/shared/password"
 	"github.com/google/uuid"
 )
 
-// Role represents a user role in Elite4Print.
+// Role represents a user role in the system.
 type Role string
 
 const (

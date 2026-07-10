@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/elite4print/elite4print-go/internal/modules/identity/application"
-	"github.com/elite4print/elite4print-go/internal/modules/identity/domain"
-	"github.com/elite4print/elite4print-go/internal/shared/eventbus"
-	"github.com/elite4print/elite4print-go/internal/shared/idgenerator"
-	"github.com/elite4print/elite4print-go/internal/shared/password"
-	"github.com/elite4print/elite4print-go/internal/shared/validator"
+	"github.com/example/go-kit/internal/modules/identity/application"
+	"github.com/example/go-kit/internal/modules/identity/domain"
+	"github.com/example/go-kit/internal/shared/eventbus"
+	"github.com/example/go-kit/internal/shared/idgenerator"
+	"github.com/example/go-kit/internal/shared/password"
+	"github.com/example/go-kit/internal/shared/validator"
 )
 
 // RegisterUser handles new user registration.

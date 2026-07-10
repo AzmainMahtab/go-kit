@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/elite4print/elite4print-go/internal/modules/auth/application"
-	"github.com/elite4print/elite4print-go/internal/modules/auth/domain"
-	"github.com/elite4print/elite4print-go/internal/shared/eventbus"
-	"github.com/elite4print/elite4print-go/internal/shared/validator"
+	"github.com/example/go-kit/internal/modules/auth/application"
+	"github.com/example/go-kit/internal/modules/auth/domain"
+	"github.com/example/go-kit/internal/shared/eventbus"
+	"github.com/example/go-kit/internal/shared/validator"
 )
 
 // RevokeSession revokes a single session owned by the user.

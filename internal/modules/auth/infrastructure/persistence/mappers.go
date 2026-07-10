@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/elite4print/elite4print-go/internal/modules/auth/domain"
+	"github.com/example/go-kit/internal/modules/auth/domain"
 	"github.com/google/uuid"
 )
 

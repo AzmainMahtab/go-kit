@@ -3,7 +3,7 @@ package http
 import (
 	"time"
 
-	"github.com/elite4print/elite4print-go/internal/modules/auth/application"
+	"github.com/example/go-kit/internal/modules/auth/application"
 	"github.com/google/uuid"
 )
 
